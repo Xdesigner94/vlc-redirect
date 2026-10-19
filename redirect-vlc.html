@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lire dans VLC</title>
+<style>
+  body { font-family: -apple-system, sans-serif; background:#1a1a2e; color:#fff;
+         text-align:center; padding:40px 20px; margin:0; }
+  .icon { font-size:64px; margin-bottom:20px; }
+  h1 { font-size:22px; margin:10px 0; }
+  p  { color:#aaa; font-size:15px; line-height:1.5; }
+  .btn { display:inline-block; background:#ff8800; color:#fff; padding:14px 28px;
+         border-radius:10px; text-decoration:none; font-weight:bold; margin-top:20px;
+         font-size:16px; }
+  .btn:active { background:#cc6600; }
+  code { background:#2a2a4e; padding:8px 12px; border-radius:6px;
+         font-size:11px; word-break:break-all; display:block; margin-top:20px; color:#88ccff; }
+  .fallback { display:none; margin-top:30px; padding:20px; background:#2a2a4e;
+              border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="icon">▶️</div>
+<h1 id="title">Ouverture de VLC...</h1>
+<p id="subtitle">Le lecteur va s'ouvrir automatiquement.</p>
+<div id="fallback" class="fallback">
+  <p>VLC ne s'est pas ouvert ?</p>
+  <a id="manual" class="btn" href="#">Ouvrir VLC manuellement</a>
+  <p style="margin-top:20px;font-size:13px;">Ou copie le lien du flux :</p>
+  <code id="stream"></code>
+</div>
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var streamUrl = params.get('url');
+  if (!streamUrl) {
+    document.getElementById('title').textContent = '❌ Erreur';
+    document.getElementById('subtitle').textContent = 'URL du flux manquante.';
+    return;
+  }
+  var vlcUrl = 'vlc-x-callback://x-callback-url/stream?url=' + encodeURIComponent(streamUrl);
+  document.getElementById('stream').textContent = streamUrl;
+  document.getElementById('manual').href = vlcUrl;
+  // Tentative d'ouverture automatique
+  setTimeout(function() {
+    window.location.href = vlcUrl;
+  }, 300);
+  // Si VLC ne s'ouvre pas dans 2.5s, afficher le fallback
+  setTimeout(function() {
+    document.getElementById('fallback').style.display = 'block';
+    document.getElementById('title').textContent = '📱 Ouvre VLC';
+    document.getElementById('subtitle').textContent = 'Clique sur le bouton ci-dessous.';
+  }, 2500);
+})();
+</script>
+</body>
+</html>
